@@ -1,0 +1,60 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.HomePage>
+@using ContentModels = Umbraco.Web.PublishedContentModels;
+
+@{
+    // If a campaign query string passed, save the value to a cookie
+    if (Request.QueryString["campaign"] != null)
+    {
+        var cookie = new HttpCookie("campaign")
+        {
+            Value = Request.QueryString["campaign"],
+            Expires = DateTime.Now.AddDays(1d)
+        };
+        Response.Cookies.Add(cookie);
+    }
+}
+
+<!-- Set your background image for this header on the line below. -->
+<header class="intro-header" style="background-image: url('img/home-bg.jpg')">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="site-heading">
+                    <h1>@Model.SiteName</h1>
+                    <hr class="small">
+                    <span class="subheading">@Model.Strapline</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+<!-- Main Content -->
+<div class="container">
+    <div class="row">
+        <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+            @{
+                var items = Model.Children<ArticlePage>()
+                    .Where(x => x.ShowToVisitor())
+                    .OrderByDescending(x => x.ShowToVisitor(false))
+                    .ThenByDescending(x => x.CreateDate);
+                foreach (var item in items)
+                {
+                    <div class="@(item.ShowToVisitor(false) ? "post-preview post-preview-highlight" : "post-preview")">
+                        <a href="@item.Url">
+                            <h2 class="post-title">
+                                @item.Heading
+                            </h2>
+                            <h3 class="post-subtitle">
+                                @item.SubHeading
+                            </h3>
+                        </a>
+                        <p class="post-meta">
+                            Posted on @item.CreateDate.ToString("d-MMM-yyyy")
+                        </p>
+                    </div>
+                    <hr>
+                }
+            }
+</div>
+    </div>
+</div>

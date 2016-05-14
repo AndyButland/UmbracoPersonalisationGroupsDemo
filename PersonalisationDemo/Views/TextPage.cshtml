@@ -1,0 +1,48 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.TextPage>
+@using ContentModels = Umbraco.Web.PublishedContentModels;
+
+@{
+    var subHeading = Model.SubHeading;
+    var standfirst = Model.Standfirst;
+
+    //var variation = Model.Children<TextPageVariation>()
+    //    .Where(x => x.ShowToVisitor())
+    //    .FirstOrDefault();
+    //if (variation != null)
+    //{
+    //    subHeading = variation.SubHeading;
+    //    standfirst = variation.Standfirst;
+    //}
+
+    var variation = Model.GetPropertyValue<IEnumerable<IPublishedContent>>("variations")
+        .Where(x => x.ShowToVisitor())
+        .FirstOrDefault();
+    if (variation != null)
+    {
+        subHeading = variation.GetPropertyValue<string>("subHeading");
+        standfirst = variation.GetPropertyValue<string>("standfirst");
+    }
+}
+
+<header class="intro-header" style="background-image: url('/img/about-bg.jpg')">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="page-heading">
+                    <h1>@Model.Heading</h1>
+                    <hr class="small">
+                    <span class="subheading">@subHeading</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+<!-- Main Content -->
+<div class="container">
+    <div class="row">
+        <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+            <p><strong>@standfirst</strong></p>
+            @Html.Raw(Model.BodyText)
+        </div>
+    </div>
+</div>
